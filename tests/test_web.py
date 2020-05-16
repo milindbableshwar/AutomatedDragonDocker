@@ -34,14 +34,27 @@ def test_basic_simulator_game(browser):
   controller = DragonController(browser)
   time.sleep(10)
   _thread.start_new_thread(control_the_dragon,
-   (stats_reader.roll_error,
+   ("Roll",
+    stats_reader.roll_error,
     stats_reader.roll_error_rate,
     controller.roll_right,
     controller.roll_left))
+  _thread.start_new_thread(control_the_dragon,
+   ("Pitch",
+    stats_reader.pitch_error,
+    stats_reader.pitch_error_rate,
+    controller.pitch_down,
+    controller.pitch_up))
+  _thread.start_new_thread(control_the_dragon,
+   ("Yaw",
+    stats_reader.yaw_error,
+    stats_reader.yaw_error_rate,
+    controller.yaw_right,
+    controller.yaw_left))
   time.sleep(300)
 
-def control_the_dragon(error_func, error_rate_func, increase_rate, decrease_rate):
-  threshold = 0.3
+def control_the_dragon(control, error_func, error_rate_func, increase_rate, decrease_rate):
+  threshold = 0.1
   while True:
     time.sleep(0.2)
     if (abs(error_func()) < 2):
@@ -60,7 +73,7 @@ def control_the_dragon(error_func, error_rate_func, increase_rate, decrease_rate
         elif (error_rate_func() > 0):
           decrease_rate()
       else:
-        print ('Equilibrium!!!')
+        print (control + ': Equilibrium!!!')
         time.sleep(3)
 
     if (error_func() > threshold and error_rate_func() < maxRate):
@@ -76,4 +89,4 @@ def control_the_dragon(error_func, error_rate_func, increase_rate, decrease_rate
       # Increasing decreased rate because of max rate limit
       increase_rate()
 
-    print("Error: " + str(error_func()) + " Error rate " + str(error_rate_func()))
+    print(control + ": Error: " + str(error_func()) + " Error rate " + str(error_rate_func()))

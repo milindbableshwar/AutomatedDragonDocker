@@ -32,39 +32,73 @@ def test_basic_simulator_game(browser):
 
   stats_reader = StatsReader(browser)
   controller = DragonController(browser)
+  sleep_duration = 0.2
   time.sleep(10)
   _thread.start_new_thread(control_the_dragon,
    ("Roll",
+    1,
+    sleep_duration,
     stats_reader.roll_error,
     stats_reader.roll_error_rate,
     controller.roll_right,
     controller.roll_left))
   _thread.start_new_thread(control_the_dragon,
    ("Pitch",
+    1,
+    sleep_duration,
     stats_reader.pitch_error,
     stats_reader.pitch_error_rate,
     controller.pitch_down,
     controller.pitch_up))
   _thread.start_new_thread(control_the_dragon,
    ("Yaw",
+    1,
+    sleep_duration,
     stats_reader.yaw_error,
     stats_reader.yaw_error_rate,
     controller.yaw_right,
     controller.yaw_left))
-  time.sleep(300)
 
-def control_the_dragon(control, error_func, error_rate_func, increase_rate, decrease_rate):
-  threshold = 0.1
+  stats_reader.start_computing_translation_rates()
+  sleep_duration_for_translation = 1
+  _thread.start_new_thread(control_the_dragon,
+   ("X",
+    10,
+    sleep_duration_for_translation,
+    stats_reader.x_range,
+    stats_reader.x_range_rate,
+    controller.x_forward,
+    controller.x_backward))
+  _thread.start_new_thread(control_the_dragon,
+   ("Y",
+    1,
+    sleep_duration_for_translation,
+    stats_reader.y_range,
+    stats_reader.y_range_rate,
+    controller.y_left,
+    controller.y_right))
+  _thread.start_new_thread(control_the_dragon,
+   ("Z",
+    1,
+    sleep_duration_for_translation,
+    stats_reader.z_range,
+    stats_reader.z_range_rate,
+    controller.z_down,
+    controller.z_up))
+  time.sleep(3000)
+
+def control_the_dragon(control, rate_multiplier, sleep_duration, error_func, error_rate_func, increase_rate, decrease_rate):
+  threshold = 0.3
   while True:
-    time.sleep(0.2)
-    if (abs(error_func()) < 2):
+    time.sleep(sleep_duration)
+    if (abs(error_func()) < 5):
       maxRate = 0.1
-    elif (abs(error_func()) < 5):
-      maxRate = 0.2
     elif (abs(error_func()) < 10):
-      maxRate = 0.3
+      maxRate = 0.2 * rate_multiplier
+    elif (abs(error_func()) < 15):
+      maxRate = 0.3 *  rate_multiplier
     else:
-      maxRate = 0.4
+      maxRate = 0.4 * rate_multiplier
 
     if (abs(error_func()) <= threshold):
       if (abs(error_rate_func()) > 0.0):
@@ -72,9 +106,9 @@ def control_the_dragon(control, error_func, error_rate_func, increase_rate, decr
           increase_rate()
         elif (error_rate_func() > 0):
           decrease_rate()
-      else:
-        print (control + ': Equilibrium!!!')
-        time.sleep(3)
+      # else:
+        # print (control + ': Equilibrium!!!')
+        # time.sleep(3)
 
     if (error_func() > threshold and error_rate_func() < maxRate):
       # Increasing rate within max rate limit because of error
@@ -89,4 +123,4 @@ def control_the_dragon(control, error_func, error_rate_func, increase_rate, decr
       # Increasing decreased rate because of max rate limit
       increase_rate()
 
-    print(control + ": Error: " + str(error_func()) + " Error rate " + str(error_rate_func()))
+    # print(control + ": Error: " + str(error_func()) + " Error rate " + str(error_rate_func()))

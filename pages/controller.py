@@ -9,6 +9,13 @@ class DragonController:
   YAW_LEFT_BUTTON = (By.ID, 'yaw-left-button')
   YAW_RIGHT_BUTTON = (By.ID, 'yaw-right-button')
 
+  X_FORWARD_BUTTON = (By.ID, 'translate-forward-button')
+  X_BACKWARD_BUTTON = (By.ID, 'translate-backward-button')
+  Y_LEFT_BUTTON = (By.ID, 'translate-left-button')
+  Y_RIGHT_BUTTON = (By.ID, 'translate-right-button')
+  Z_UP_BUTTON = (By.ID, 'translate-up-button')
+  Z_DOWN_BUTTON = (By.ID, 'translate-down-button')
+
   def __init__(self, browser):
     self.browser = browser
 
@@ -34,4 +41,28 @@ class DragonController:
 
   def yaw_right(self):
     yaw_right_button = self.browser.find_element(*self.YAW_RIGHT_BUTTON)
+    yaw_right_button.click()
+
+  def x_forward(self):
+    yaw_right_button = self.browser.find_element(*self.X_FORWARD_BUTTON)
+    yaw_right_button.click()
+
+  def x_backward(self):
+    yaw_right_button = self.browser.find_element(*self.X_BACKWARD_BUTTON)
+    yaw_right_button.click()
+
+  def y_left(self):
+    yaw_right_button = self.browser.find_element(*self.Y_LEFT_BUTTON)
+    yaw_right_button.click()
+
+  def y_right(self):
+    yaw_right_button = self.browser.find_element(*self.Y_RIGHT_BUTTON)
+    yaw_right_button.click()
+
+  def z_up(self):
+    yaw_right_button = self.browser.find_element(*self.Z_UP_BUTTON)
+    yaw_right_button.click()
+
+  def z_down(self):
+    yaw_right_button = self.browser.find_element(*self.Z_DOWN_BUTTON)
     yaw_right_button.click()

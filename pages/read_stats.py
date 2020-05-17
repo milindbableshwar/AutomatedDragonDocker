@@ -18,14 +18,12 @@ class StatsReader:
   Y_RANGE_ID = (By.XPATH, f"//div[@id='hud']//div[@id='pyr']//div[@id='y-range']//div[@class='distance']")
   Z_RANGE_ID = (By.XPATH, f"//div[@id='hud']//div[@id='pyr']//div[@id='z-range']//div[@class='distance']")
 
+  RANGE_RATE_ID = (By.XPATH, f"//div[@id='hud']//div[@id='rate']//div[contains(@class,'rate')]")
 
   def __init__(self, browser):
     self.browser = browser
 
   def start_computing_translation_rates(self):
-    self.old_x_range = self.x_range()
-    self.x_rate = 0
-    _thread.start_new_thread(self.compute_translation_rate, (self.x_range, self.set_x_rate, self.get_old_x_range, self.set_old_x_range))
     self.old_y_range = self.y_range()
     self.y_rate = 0
     _thread.start_new_thread(self.compute_translation_rate, (self.y_range, self.set_y_rate, self.get_old_y_range, self.set_old_y_range))
@@ -34,24 +32,14 @@ class StatsReader:
     _thread.start_new_thread(self.compute_translation_rate, (self.z_range, self.set_z_rate, self.get_old_z_range, self.set_old_z_range))
 
   def compute_translation_rate(self, get_range, set_rate, get_old_range, set_old_range):
-    while True:
-      time.sleep(1)
-      current_range = get_range()
-      set_rate(get_old_range() - current_range)
-      set_old_range(current_range)
-
-  def set_x_rate(self, rate):
-    self.x_rate = rate
-
-  def get_old_x_range(self):
-    return self.old_x_range
-
-  def set_old_x_range(self, range):
-    self.old_x_range = range
-
-  def x_range_rate(self):
-    return self.x_rate
-
+    try:
+      while True:
+        time.sleep(1)
+        current_range = get_range()
+        set_rate(get_old_range() - current_range)
+        set_old_range(current_range)
+    except:
+      return
 
   def set_y_rate(self, rate):
     self.y_rate = rate
@@ -66,7 +54,6 @@ class StatsReader:
     return self.y_rate
 
 
-
   def set_z_rate(self, rate):
     self.z_rate = rate
 
@@ -78,8 +65,6 @@ class StatsReader:
 
   def z_range_rate(self):
     return self.z_rate
-
-
 
 
   def parseFromDom(self, *id):
@@ -112,3 +97,6 @@ class StatsReader:
 
   def z_range(self):
     return self.parseFromDom(*self.Z_RANGE_ID)
+
+  def range_rate(self):
+    return self.parseFromDom(*self.RANGE_RATE_ID)

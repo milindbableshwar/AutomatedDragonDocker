@@ -16,7 +16,7 @@ def browser():
   driver = Chrome()
 
   # Wait implicitly for elements to be ready before attempting interactions
-  driver.implicitly_wait(10)
+  driver.implicitly_wait(30)
 
   # Return the driver object at the end of setup
   yield driver
@@ -108,6 +108,7 @@ def control_the_dragon(control, sleep_duration, error_func, error_rate_func, inc
       error = error_func()
       error_rate = error_rate_func()
 
+      # if error is in certain limit, apply certain rate change limits
       if (abs(error) < 5 * step_multiplier):
         maxRate = 0.1
       elif (abs(error) < 10 * step_multiplier):
@@ -117,10 +118,12 @@ def control_the_dragon(control, sleep_duration, error_func, error_rate_func, inc
       else:
         maxRate = 0.4
         if (invert_error_rate):
+          # allow forward translation to knock itself out
           maxRate = 1.0
 
       if (invert_error_rate):
         error_rate = -error_rate
+        # for forward translation, slow down dramatically if wihtin 10m if ISS
         if (error < 10):
           maxRate = 0.05
 

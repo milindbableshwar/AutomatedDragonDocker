@@ -123,8 +123,10 @@ def control_the_dragon(control, sleep_duration, error_func, error_rate_func, inc
 
       if (invert_error_rate):
         error_rate = -error_rate
-        # for forward translation, slow down dramatically if wihtin 10m if ISS
-        if (error < 10):
+        # for forward translation, slow down dramatically nearby ISS
+        if (error < 5):
+          maxRate = 0.02
+        elif (error < 10):
           maxRate = 0.05
 
       if (abs(error) <= threshold):
